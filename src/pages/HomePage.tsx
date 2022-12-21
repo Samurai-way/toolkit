@@ -1,10 +1,10 @@
 import React from 'react';
-import {useSearchUsersQuery} from "../store/github/github.api";
+import {useLazyGetUserReposQuery, useSearchUsersQuery} from "../store/github/github.api";
 import {useDebounce} from "../hooks/debouce";
 
 const HomePage = () => {
 
-    const [search, setSearch]= React.useState('')
+    const [search, setSearch] = React.useState('')
     const [drop, setDrop] = React.useState(false)
     const debounced = useDebounce(search)
     const {isLoading, isError, data: users} = useSearchUsersQuery(debounced, {
@@ -12,10 +12,15 @@ const HomePage = () => {
         refetchOnFocus: true
     })
 
+    const [fetchRepos, {isLoading: areReposLoading, data: repos}] = useLazyGetUserReposQuery()
 
-    React.useEffect(()=>{
+    React.useEffect(() => {
         setDrop(debounced.length > 3 && users?.length! > 0)
-    },[debounced, users])
+    }, [debounced, users])
+
+    const clickHanler = (username: string) => {
+        console.log(username)
+    }
 
     return (
         <div>
@@ -31,9 +36,15 @@ const HomePage = () => {
             {drop && <ul>
                 {isLoading && <span>loading...</span>}
                 {users?.map(u => (
-                    <li key={u.id}>{u.login}</li>
+                    <li
+                        onClick={() => clickHanler(u.login)}
+                        key={u.id}>{u.login}</li>
                 ))}
             </ul>}
+
+            <div>
+                {areReposLoading && <p>Repos are loading...</p>}
+            </div>
         </div>
     );
 };
