@@ -8,7 +8,7 @@ import {useSearchUsersQuery} from "./store/github/github.api";
 
 function App() {
 
-    const {isLoading, isError, data} = useSearchUsersQuery('oleg')
+    // const {isLoading, isError, data} = useSearchUsersQuery('oleg')
 
 
     return (
